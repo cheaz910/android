@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Habits</string>
+    <string name="submit">+</string>
+    <string name="radioUseful">Полезная</string>
+    <string name="radioAddiction">Вредная</string>
+    <string name="textDescription">Описание</string>
+    <string name="textTitle">Название</string>
+    <string name="textPriority">Приоритет</string>
+    <string name="textType">Тип</string>
+    <string name="textCount">Количество</string>
+    <string name="textFrequency">Частота</string>
+    <string name="btnCreate">Создать</string>
+    <string name="homeNav">Домашняя страница</string>
+    <string name="aboutNav">О приложении</string>
+
+    <string name="priority_prompt">Выберите приоритет</string>
+    <string-array name="priorities">
+        <item>Низкий</item>
+        <item>Высокий</item>
+    </string-array>
+    <string-array name="screen_array">
+        <item>Screen 1</item>
+        <item>Screen 2</item>
+    </string-array>
+</resources>

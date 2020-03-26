@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddHabit">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TableRow style="@style/AddHabitLine">
+            <TextView
+                android:layout_weight="0.35"
+                android:text="@string/textTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/formTitle"
+                android:hint="@string/textTitle"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:autofillHints="no" />
+        </TableRow>
+        <TableRow style="@style/AddHabitLine">
+            <TextView
+                android:layout_weight="0.35"
+                android:text="@string/textDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/formDescription"
+                android:hint="@string/textDescription"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:autofillHints="no" />
+        </TableRow>
+        <TableRow style="@style/AddHabitLine">
+            <TextView
+                android:layout_weight="0.35"
+                android:text="@string/textPriority"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Spinner
+                android:id="@+id/formPriorities"
+                android:entries="@array/priorities"
+                android:prompt="@string/priority_prompt"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </TableRow>
+        <TableRow style="@style/AddHabitLine">
+            <TextView
+                android:layout_weight="0.35"
+                android:text="@string/textType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioGroup
+                android:id="@+id/formRadios"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <RadioButton
+                    android:id="@+id/radioUseful"
+                    android:text="@string/radioUseful"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true" />
+                <RadioButton
+                    android:text="@string/radioAddiction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RadioGroup>
+        </TableRow>
+        <TableRow style="@style/AddHabitLine">
+            <TextView
+                android:layout_weight="0.35"
+                android:text="@string/textCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/formCount"
+                android:inputType="text"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/textCount"
+                android:autofillHints="no" />
+        </TableRow>
+        <TableRow style="@style/AddHabitLine">
+            <TextView
+                android:layout_weight="0.35"
+                android:text="@string/textFrequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/formFrequency"
+                android:layout_weight="1"
+                android:inputType="text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/textFrequency"
+                android:autofillHints="no" />
+        </TableRow>
+        <TableRow android:gravity="center">
+            <Button
+                android:id="@+id/btnCreateHabit"
+                android:text="@string/btnCreate" />
+        </TableRow>
+    </TableLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
