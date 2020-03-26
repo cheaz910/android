@@ -2,6 +2,7 @@ package com.example.task2
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -15,14 +16,14 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity(), AddHabitCallback, NavigationView.OnNavigationItemSelectedListener {
-    private val badHabits = mutableListOf<Habit>(
+    private var badHabits = mutableListOf<Habit>(
         Habit(
             "Привычка1", "Описание привычки1", "Высокий", "Вредная",
             "", "1 раз в день"
         )
     )
 
-    private val goodHabits = mutableListOf<Habit>(
+    private var goodHabits = mutableListOf<Habit>(
         Habit(
             "Привычка2", "Описание привычки2", "Низкий", "Полезная",
             "", "1 раз в неделю"
@@ -41,6 +42,18 @@ class MainActivity : AppCompatActivity(), AddHabitCallback, NavigationView.OnNav
                 .add(R.id.container, getFragmentHabbits())
                 .commit()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelableArrayList("goodHabits", goodHabits as ArrayList<Habit>)
+        outState.putParcelableArrayList("badHabits", badHabits as ArrayList<Habit>)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        goodHabits = savedInstanceState.getParcelableArrayList<Habit>("goodHabits") as ArrayList<Habit>
+        badHabits = savedInstanceState.getParcelableArrayList<Habit>("badHabits") as ArrayList<Habit>
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
