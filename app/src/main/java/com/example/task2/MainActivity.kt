@@ -10,87 +10,80 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), AddHabitCallback, NavigationView.OnNavigationItemSelectedListener {
-    private var badHabits = mutableListOf<Habit>(
-        Habit(
-            "Привычка1", "Описание привычки1", "Высокий", "Вредная",
-            "", "1 раз в день"
-        )
-    )
-
-    private var goodHabits = mutableListOf<Habit>(
-        Habit(
-            "Привычка2", "Описание привычки2", "Низкий", "Полезная",
-            "", "1 раз в неделю"
-        )
-    )
-
+class MainActivity : AppCompatActivity(),
+    AddHabitCallback,
+    NavigationView.OnNavigationItemSelectedListener,
+    AddHabitButtonPressedCallback,
+    EditHabitCallback {
+    companion object {
+        const val fragmentHomeKey = "homeFragment"
+        const val fragmentAboutKey = "aboutFragment"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         findViewById<NavigationView>(R.id.navigationDrawer).setNavigationItemSelectedListener(this)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.container, getFragmentHabbits())
+                .add(R.id.container, MainFragment.newInstance(0))
                 .commit()
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList("goodHabits", goodHabits as ArrayList<Habit>)
-        outState.putParcelableArrayList("badHabits", badHabits as ArrayList<Habit>)
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        goodHabits = savedInstanceState.getParcelableArrayList<Habit>("goodHabits") as ArrayList<Habit>
-        badHabits = savedInstanceState.getParcelableArrayList<Habit>("badHabits") as ArrayList<Habit>
-    }
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.getItemId()) {
+        when (item.itemId) {
             R.id.menu_item_home -> {
-                Log.i("TAG", "item_home")
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, getFragmentHabbits())
-                    .commit()
+                val fragmentPopped = supportFragmentManager.popBackStackImmediate(fragmentHomeKey, 0)
+                if (!fragmentPopped) {
+                    supportFragmentManager.beginTransaction()
+                        .addToBackStack(fragmentHomeKey)
+                        .replace(R.id.container, MainFragment())
+                        .commit()
+                }
             }
             R.id.menu_item_about -> {
-                Log.i("TAG", "item_about")
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, About())
-                    .commit()
+                val fragmentPopped = supportFragmentManager.popBackStackImmediate(fragmentAboutKey, 0)
+                if (!fragmentPopped) {
+                    supportFragmentManager.beginTransaction()
+                        .addToBackStack(fragmentAboutKey)
+                        .replace(R.id.container, About())
+                        .commit()
+                }
             }
         }
         navigationDrawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    private fun getFragmentHabbits(): MainFragment {
-        val bundle = Bundle()
-        val fragmentInstance = MainFragment()
-        fragmentInstance.arguments = bundle
-        bundle.putParcelableArrayList("goodHabits", goodHabits as ArrayList<out Parcelable>)
-        bundle.putParcelableArrayList("badHabits", badHabits as ArrayList<out Parcelable>)
-        return fragmentInstance
+    override fun onHabitAdded(pageId: Int?) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, MainFragment.newInstance(pageId))
+            .commit()
     }
 
-    override fun onHabitAdded(item: Habit) {
-        if (item.type == "полезная")
-            goodHabits.add(item)
-        else
-            badHabits.add(item)
+    override fun onAddHabitButtonPressed(pageId: Int?) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, getFragmentHabbits())
+            .addToBackStack(null)
+            .replace(R.id.container, AddHabit.newInstance(null, pageId))
+            .commit()
+    }
+
+    override fun onEditHabitCallback(id: Int, pageId: Int?) {
+        supportFragmentManager.beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.container, AddHabit.newInstance(id, pageId))
             .commit()
     }
 }

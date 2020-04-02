@@ -9,14 +9,23 @@
     <string name="textType">Тип</string>
     <string name="textCount">Количество</string>
     <string name="textFrequency">Частота</string>
+    <string name="textCountHint">Количество дней</string>
+    <string name="textFrequencyHint">Количество раз в день</string>
     <string name="btnCreate">Создать</string>
     <string name="homeNav">Домашняя страница</string>
     <string name="aboutNav">О приложении</string>
+    <string name="aboutFragmentText">Приложение о привычках</string>
+    <string name="countPostfix"> дней</string>
+    <string name="frequencyPostfix"> раз в день</string>
 
     <string name="priority_prompt">Выберите приоритет</string>
     <string-array name="priorities">
         <item>Низкий</item>
         <item>Высокий</item>
+    </string-array>
+    <string-array name="sortTypes">
+        <item>по названию</item>
+        <item>по описанию</item>
     </string-array>
     <string-array name="screen_array">
         <item>Screen 1</item>

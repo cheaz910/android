@@ -1,6 +1,7 @@
 package com.example.task2
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ import kotlin.collections.ArrayList
 
 
 class MainFragment: Fragment() {
-    class MyPagerAdapter(fragmentManager: FragmentManager, private val bundle: Bundle) :
+    class MyPagerAdapter(fragmentManager: FragmentManager) :
         FragmentPagerAdapter(fragmentManager) {
         // Returns total number of pages
         override fun getCount(): Int {
@@ -25,32 +26,40 @@ class MainFragment: Fragment() {
 
         // Returns the fragment to display for that page
         override fun getItem(position: Int): Fragment {
-            val fragmentInstance = HabitsFragment()
-            val newBundle = Bundle()
-            when (position) {
+            return when (position) {
                 0 -> {
-                    newBundle.putParcelableArrayList("habits",
-                        bundle.getParcelableArrayList<Habit>("goodHabits"))
-                    fragmentInstance.arguments = newBundle
+                    HabitsFragment.newInstance(Constants.HabitType.GOOD, position)
                 }
                 else -> {
-                    newBundle.putParcelableArrayList("habits",
-                        bundle.getParcelableArrayList<Habit>("badHabits"))
-                    fragmentInstance.arguments = newBundle
+                    HabitsFragment.newInstance(Constants.HabitType.BAD, position)
                 }
             }
-            return fragmentInstance
         }
 
         // Returns the page title for the top indicator
         override fun getPageTitle(position: Int): CharSequence? {
             if (position == 0)
-                return "Полезная"
-            return "Вредная"
+                return goodPageTitle
+            return badPageTitle
         }
 
         companion object {
             private const val NUM_ITEMS = 2
+            private val goodPageTitle = "Полезные"
+            private val badPageTitle = "Вредные"
+        }
+    }
+
+    companion object {
+        private const val pageIdKey = "pageId"
+        fun newInstance(id: Int?) : MainFragment {
+            val fragment = MainFragment()
+            val bundle = Bundle()
+            if (id != null) {
+                bundle.putInt(pageIdKey, id)
+            }
+            fragment.arguments = bundle
+            return fragment
         }
     }
 
@@ -64,10 +73,11 @@ class MainFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.let {
-            vpPager.adapter = MyPagerAdapter(childFragmentManager, it)
-            tabLayout.setupWithViewPager(vpPager)
+        vpPager.adapter = MyPagerAdapter(childFragmentManager)
+        if (arguments!!.containsKey(pageIdKey)) {
+            vpPager.currentItem = arguments!!.getInt(pageIdKey)
         }
+        tabLayout.setupWithViewPager(vpPager)
     }
 
 }

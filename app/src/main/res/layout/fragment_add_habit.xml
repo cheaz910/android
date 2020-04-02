@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    tools:context=".AddHabit">
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    android:layout_width="match_parent">
+    <TableLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <TableRow style="@style/AddHabitLine">
             <TextView
                 android:layout_weight="0.35"
@@ -83,11 +80,11 @@
                 android:layout_height="wrap_content" />
             <EditText
                 android:id="@+id/formCount"
-                android:inputType="text"
+                android:inputType="number"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/textCount"
+                android:hint="@string/textCountHint"
                 android:autofillHints="no" />
         </TableRow>
         <TableRow style="@style/AddHabitLine">
@@ -99,10 +96,10 @@
             <EditText
                 android:id="@+id/formFrequency"
                 android:layout_weight="1"
-                android:inputType="text"
+                android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/textFrequency"
+                android:hint="@string/textFrequencyHint"
                 android:autofillHints="no" />
         </TableRow>
         <TableRow android:gravity="center">
@@ -111,4 +108,4 @@
                 android:text="@string/btnCreate" />
         </TableRow>
     </TableLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

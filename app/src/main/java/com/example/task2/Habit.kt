@@ -6,10 +6,11 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Habit(
-    val title: String?,
-    val description: String?,
-    val priority: String?,
-    val type: String?,
-    val count: String?,
-    val frequency: String?
+    val id: Int,
+    var title: String?,
+    var description: String?,
+    var priority: String?,
+    var type: Constants.HabitType,
+    var count: String?,
+    var frequency: String?
 ) : Parcelable {}

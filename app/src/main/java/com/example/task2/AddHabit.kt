@@ -1,50 +1,51 @@
 package com.example.task2
 
-import android.app.Activity.RESULT_OK
 import android.content.Context
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.RadioButton
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_add_habit.*
-import kotlinx.android.synthetic.main.fragment_habits.*
-import java.util.*
 
 interface AddHabitCallback {
-    fun onHabitAdded(item: Habit)
+    fun onHabitAdded(pageId: Int?)
 }
 
 class AddHabit : Fragment() {
     companion object {
-        private const val ARGS_NAME = "args_name"
-        fun newInstance(name: String) : AddHabit {
+        private const val habitIdKey = "habitId"
+        private const val pageIdKey = "pageId"
+        fun newInstance(id: Int?, pageId: Int?) : AddHabit {
             val fragment = AddHabit()
             val bundle = Bundle()
-            bundle.putString(name, ARGS_NAME)
+            if (id != null)
+                bundle.putInt(habitIdKey, id)
+            if (pageId != null)
+                bundle.putInt(pageIdKey, pageId)
             fragment.arguments = bundle
             return fragment
         }
     }
 
-    var name: String = ""
-    var callback: AddHabitCallback? = null
+    var addHabitCallback: AddHabitCallback? = null
+    private lateinit var changeHabitViewModel: ChangeHabitViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = activity as AddHabitCallback
+        addHabitCallback = activity as AddHabitCallback
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        changeHabitViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return ChangeHabitViewModel(arguments?.getInt(habitIdKey)) as T
+            }
+        }).get(ChangeHabitViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -52,28 +53,54 @@ class AddHabit : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view: View = inflater.inflate(R.layout.fragment_add_habit, container, false)
-        return view
+        return inflater.inflate(R.layout.fragment_add_habit, container, false)
+    }
+
+    private fun fillFormsByExistedHabit(habit: Habit) {
+        formTitle.setText(habit.title)
+        formDescription.setText(habit.description)
+        formPriorities.setSelection(Constants.priorities[habit.priority]!!)
+        formCount.setText(habit.count)
+        formFrequency.setText(habit.frequency)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val habitId = if (arguments!!.containsKey(habitIdKey))
+            arguments?.getInt(habitIdKey)
+        else
+            null
+        if (habitId != null) {
+            val habit = HabitModel.getHabitById(habitId)
+            if (habit != null) {
+                fillFormsByExistedHabit(habit)
+            }
+        }
         btnCreateHabit.setOnClickListener {
-//            activity!!.supportFragmentManager.beginTransaction()
-//                .replace(R.id.container, MainFragment(), "tag")
-//                .commit()
-            var formType: String;
-            if (radioUseful.isChecked)
-                formType = "полезная"
+            val formType = if (radioUseful.isChecked)
+                Constants.HabitType.GOOD
             else
-                formType = "вредная"
-            val item = Habit(formTitle.text.toString(),
-                formDescription.text.toString(),
-                formPriorities.selectedItem.toString(),
-                formType,
-                formCount.text.toString(),
-                formFrequency.text.toString())
-            callback?.onHabitAdded(item)
+                Constants.HabitType.BAD
+            if (habitId != null) {
+                changeHabitViewModel.changeHabit(habitId,
+                    formTitle.text.toString(),
+                    formDescription.text.toString(),
+                    formPriorities.selectedItem.toString(),
+                    formType,
+                    formCount.text.toString(),
+                    formFrequency.text.toString()
+                )
+            } else {
+                changeHabitViewModel.addHabit(
+                    formTitle.text.toString(),
+                    formDescription.text.toString(),
+                    formPriorities.selectedItem.toString(),
+                    formType,
+                    formCount.text.toString(),
+                    formFrequency.text.toString()
+                )
+            }
+            addHabitCallback?.onHabitAdded(arguments?.getInt(pageIdKey))
         }
     }
 }

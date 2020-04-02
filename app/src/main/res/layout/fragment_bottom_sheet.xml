@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:background="@android:color/darker_gray"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/test123"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:text="Фильтры и сортировки"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnSortAsc"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@null"
+        android:drawableLeft="@drawable/ic_arrow_upward_black_18dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/formSearch"
+        app:layout_constraintStart_toEndOf="@+id/formSortBy"
+        app:layout_constraintTop_toBottomOf="@+id/test123" />
+
+    <Button
+        android:id="@+id/btnSortDesc"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="5dp"
+        android:background="@null"
+        android:drawableLeft="@drawable/ic_arrow_downward_black_18dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/formSearch"
+        app:layout_constraintStart_toEndOf="@+id/btnSortAsc"
+        app:layout_constraintTop_toBottomOf="@+id/test123"
+        android:layout_marginLeft="5dp" />
+
+
+    <Spinner
+        android:id="@+id/formSortBy"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:entries="@array/sortTypes"
+        android:prompt="@string/priority_prompt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/test123" />
+
+    <EditText
+        android:id="@+id/formSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:autofillHints="no"
+        android:hint="@string/textTitle"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/formSortBy" />
+</androidx.constraintlayout.widget.ConstraintLayout>
