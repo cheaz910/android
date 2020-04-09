@@ -1,5 +1,6 @@
 package com.example.task2
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.os.Bundle
@@ -60,8 +61,7 @@ class HabitsFragment: Fragment() {
         }).get(HabitsViewModel::class.java)
         childFragmentManager.beginTransaction()
             .replace(R.id.bottom_sheet_container,
-                BottomSheetFragment.newInstance(arguments?.getSerializable(habitTypeKey) as Constants.HabitType,
-                    habitsViewModel))
+                BottomSheetFragment.newInstance(arguments?.getSerializable(habitTypeKey) as Constants.HabitType))
             .commit()
     }
 
@@ -75,7 +75,7 @@ class HabitsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        habitsViewModel.habits.observe(this, Observer {
+        habitsViewModel.getHabits().observe(this, Observer {
             myAdapter = MainAdapter(it as ArrayList<Habit>,
                 editHabitCallback, arguments?.getInt(pageIdKey))
             myRecycler.adapter = myAdapter

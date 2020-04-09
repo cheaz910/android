@@ -67,6 +67,7 @@
                     android:layout_height="wrap_content"
                     android:checked="true" />
                 <RadioButton
+                    android:id="@+id/radioUseless"
                     android:text="@string/radioAddiction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

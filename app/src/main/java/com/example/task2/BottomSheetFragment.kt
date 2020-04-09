@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -25,12 +26,10 @@ import kotlin.collections.ArrayList
 class BottomSheetFragment: Fragment() {
     companion object {
         private const val habitTypeKey = "habitType"
-        private const val habitViewModelKey = "habitViewModel"
-        fun newInstance(type: Constants.HabitType, habitsViewModel: HabitsViewModel) : BottomSheetFragment {
+        fun newInstance(type: Constants.HabitType) : BottomSheetFragment {
             val fragment = BottomSheetFragment()
             val bundle = Bundle()
             bundle.putSerializable(habitTypeKey, type)
-            bundle.putParcelable(habitViewModelKey, habitsViewModel)
             fragment.arguments = bundle
             return fragment
         }
@@ -40,7 +39,7 @@ class BottomSheetFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        habitsViewModel = arguments?.getParcelable(habitViewModelKey)!!
+        habitsViewModel = ViewModelProvider(parentFragment!!).get(HabitsViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -53,11 +52,24 @@ class BottomSheetFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        formSortBy.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                habitsViewModel.selectItemSelected(Constants.SortType.values()[id.toInt()])
+            }
+        }
         btnSortAsc.setOnClickListener {
-            habitsViewModel.sortBy(true, Constants.SortType.values()[formSortBy.selectedItemId.toInt()])
+            habitsViewModel.sortBy(true, getSortType())
         }
         btnSortDesc.setOnClickListener {
-            habitsViewModel.sortBy(false, Constants.SortType.values()[formSortBy.selectedItemId.toInt()])
+            habitsViewModel.sortBy(false, getSortType())
         }
         formSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) { }
@@ -65,9 +77,12 @@ class BottomSheetFragment: Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                habitsViewModel.filterByString(s.toString())
+                habitsViewModel.filterByString(s.toString(), getSortType())
             }
         })
     }
 
+    private fun getSortType() : Constants.SortType {
+        return Constants.SortType.values()[formSortBy.selectedItemId.toInt()]
+    }
 }

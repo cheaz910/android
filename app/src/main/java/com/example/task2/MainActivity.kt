@@ -5,6 +5,7 @@ import android.os.Parcelable
 import android.os.PersistableBundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -27,12 +29,15 @@ class MainActivity : AppCompatActivity(),
         const val fragmentAboutKey = "aboutFragment"
     }
 
+    lateinit var db: AppDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        AppDatabase.init(applicationContext)
 
-        findViewById<NavigationView>(R.id.navigationDrawer).setNavigationItemSelectedListener(this)
+        setContentView(R.layout.activity_main)
+        navigationDrawer.setNavigationItemSelectedListener(this)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -48,7 +53,7 @@ class MainActivity : AppCompatActivity(),
                 if (!fragmentPopped) {
                     supportFragmentManager.beginTransaction()
                         .addToBackStack(fragmentHomeKey)
-                        .replace(R.id.container, MainFragment())
+                        .replace(R.id.container, MainFragment.newInstance(0))
                         .commit()
                 }
             }

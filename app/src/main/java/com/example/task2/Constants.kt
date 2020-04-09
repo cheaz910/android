@@ -10,6 +10,6 @@ class Constants {
     }
 
     companion object {
-        val priorities = mutableMapOf("Высокий" to 0, "Низкий" to 1)
+        val priorities = mutableMapOf("Высокий" to 1, "Низкий" to 0)
     }
 }

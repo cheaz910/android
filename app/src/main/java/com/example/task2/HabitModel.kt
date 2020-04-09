@@ -1,101 +1,54 @@
 package com.example.task2
 
+import android.content.Context
 import android.os.Parcelable
 import android.util.Log
+import androidx.lifecycle.LiveData
 import kotlinx.android.parcel.Parcelize
 
-@Parcelize
-class HabitModel : Parcelable {
-    companion object {
-        private var habits = mutableListOf<Habit>(
-            Habit(
-                0, "Привычка1", "Описание привычки1", "Высокий",
-                Constants.HabitType.BAD,
-                "", "1"
-            ),
-            Habit(
-                1, "Привычка1", "АОписание привычки1", "Высокий",
-                Constants.HabitType.GOOD,
-                "", "1"
-            ),
-            Habit(
-                2, "АбвПривычка1", "БОписание привычки1", "Высокий",
-                Constants.HabitType.GOOD,
-                "", "1"
-            ),
-            Habit(
-                3, "БгвдПривычка1", "ВОписание привычки1", "Высокий",
-                Constants.HabitType.GOOD,
-                "", "1"
-            ),
-            Habit(
-                4, "Привasdfычка1", "ГОписание привычки1", "Высокий",
-                Constants.HabitType.GOOD,
-                "", "1"
-            ),
-            Habit(
-                5, "Привычкаfdsafd1", "Описание привычки1", "Высокий",
-                Constants.HabitType.GOOD,
-                "", "1"
-            )
-        )
-        private var idCounter = 6;
+class HabitModel() {
+    private var db = AppDatabase.getInstance()
 
-        fun createHabit(title: String?, description: String?, priority: String?, type: Constants.HabitType,
-                        count: String?, frequency: String?) {
-            val habit = Habit(idCounter, title, description, priority, type, count, frequency)
-            idCounter++
-            habits.add(habit)
+    fun createHabit(title: String?, description: String?, priority: String?, type: Constants.HabitType,
+                    count: String?, frequency: String?) {
+        val habit = Habit(title, description, priority, type == Constants.HabitType.GOOD, count, frequency)
+        db.habitDao().insert(habit)
+    }
+
+    fun getHabitById(id: Int): LiveData<Habit> {
+        return db.habitDao().getHabitById(id)
+    }
+
+    fun editHabit(id: Int, title: String?, description: String?, priority: String?, type: Constants.HabitType,
+                  count: String?, frequency: String?) {
+        val habit = Habit(title, description, priority, type == Constants.HabitType.GOOD, count, frequency)
+        habit.id = id
+        db.habitDao().update(habit)
+    }
+
+    fun getFilteredSortedHabits(filterString: String, isAscending: Boolean,
+                                type: Constants.HabitType, sortType: Constants.SortType) : LiveData<List<Habit>> {
+        if (isAscending) {
+            if (sortType == Constants.SortType.TITLE)
+                return db.habitDao().getFilteredTitleAscByField(filterString, type == Constants.HabitType.GOOD)
+            return db.habitDao().getFilteredDescrAscByField(filterString, type == Constants.HabitType.GOOD)
         }
+        if (sortType == Constants.SortType.TITLE)
+            return db.habitDao().getFilteredTitleDescByField(filterString, type == Constants.HabitType.GOOD)
+        return db.habitDao().getFilteredDescrDescByField(filterString, type == Constants.HabitType.GOOD)
+    }
 
-        fun getHabitById(id: Int): Habit? {
-            var result = getHabits(Constants.HabitType.GOOD).singleOrNull { s -> s.id == id }
-            if (result == null) {
-                result = getHabits(Constants.HabitType.BAD).singleOrNull { s -> s.id == id}
-            }
-            return result
-        }
+    private fun getFilteredHabits(filterString: String, type: Constants.HabitType,
+                                  sortType: Constants.SortType) : LiveData<List<Habit>> {
+        val filterField = if (sortType == Constants.SortType.TITLE) "title" else "description"
+        return db.habitDao().getFilteredByField(filterField, filterString, type == Constants.HabitType.GOOD)
+    }
 
-        fun editHabit(id: Int, title: String?, description: String?, priority: String?, type: Constants.HabitType,
-                      count: String?, frequency: String?) {
-            val habit = getHabitById(id)!!
-            habit.title = title
-            habit.description = description
-            habit.priority = priority
-            habit.type = type
-            habit.count = count
-            habit.frequency = frequency
-        }
+    fun getAll() : LiveData<List<Habit>> {
+        return db.habitDao().getAll()
+    }
 
-        fun getFilteredSortedHabits(filterString: String, isAscending: Boolean,
-                                    type: Constants.HabitType, sortType: Constants.SortType) : List<Habit> {
-            val comparator: Comparator<Habit> = when (sortType) {
-                Constants.SortType.TITLE -> if (isAscending)
-                    compareBy { it.title }
-                else
-                    compareByDescending { it.title }
-                Constants.SortType.DESCRIPTION -> if (isAscending)
-                    compareBy { it.description }
-                else
-                    compareByDescending { it.description }
-            }
-            return getFilteredHabits(filterString, type, sortType).sortedWith(comparator)
-        }
-
-        private fun getFilteredHabits(filterString: String, type: Constants.HabitType,
-                                      sortType: Constants.SortType) : List<Habit> {
-            return if (sortType == Constants.SortType.TITLE)
-                getHabits(type).filter { s -> s.title!!.contains(filterString)}
-            else
-                getHabits(type).filter { s -> s.description!!.contains(filterString)}
-
-        }
-
-        private fun getHabits(type: Constants.HabitType): List<Habit> {
-            return if (type == Constants.HabitType.GOOD)
-                habits.filter { it.type == Constants.HabitType.GOOD }
-            else
-                habits.filter { it.type == Constants.HabitType.BAD }
-        }
+    fun getHabits(isGoodHabit: Boolean): LiveData<List<Habit>> {
+        return db.habitDao().getAllByType(isGoodHabit)
     }
 }

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_add_habit.*
@@ -62,6 +63,10 @@ class AddHabit : Fragment() {
         formPriorities.setSelection(Constants.priorities[habit.priority]!!)
         formCount.setText(habit.count)
         formFrequency.setText(habit.frequency)
+        if (habit.isGoodHabit)
+            radioUseful.isChecked = true
+        else
+            radioUseless.isChecked = true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,12 +75,13 @@ class AddHabit : Fragment() {
             arguments?.getInt(habitIdKey)
         else
             null
-        if (habitId != null) {
-            val habit = HabitModel.getHabitById(habitId)
-            if (habit != null) {
-                fillFormsByExistedHabit(habit)
+        changeHabitViewModel.getChangedHabit().observe(this, Observer { habit ->
+            if (habitId != null) {
+                if (habit != null) {
+                    fillFormsByExistedHabit(habit)
+                }
             }
-        }
+        })
         btnCreateHabit.setOnClickListener {
             val formType = if (radioUseful.isChecked)
                 Constants.HabitType.GOOD

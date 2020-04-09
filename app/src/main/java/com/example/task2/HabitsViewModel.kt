@@ -1,20 +1,17 @@
 package com.example.task2
 
-import android.os.Parcelable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import kotlinx.android.parcel.Parcelize
+import android.util.Log
+import androidx.lifecycle.*
 
-@Parcelize
-class HabitsViewModel(private val habitType: Constants.HabitType) : ViewModel(), Parcelable {
-    private val mutableHabits: MutableLiveData<List<Habit>?> = MutableLiveData()
+class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel() {
+    private var mediatorHabits: MediatorLiveData<List<Habit>> = MediatorLiveData()
+    private var lastHabits: LiveData<List<Habit>> = MutableLiveData()
 
-    val habits: LiveData<List<Habit>?> = mutableHabits
-
+    // val habits: LiveData<List<Habit>> = mutableHabits
     private var filterString = ""
     private var isAscending = true
     private var sortType = Constants.SortType.TITLE
+    private val habitModel = HabitModel()
 
     init {
         load()
@@ -24,8 +21,13 @@ class HabitsViewModel(private val habitType: Constants.HabitType) : ViewModel(),
         changeHabits()
     }
 
-    fun filterByString(filterString: String) {
+    fun getHabits() : LiveData<List<Habit>> {
+        return mediatorHabits
+    }
+
+    fun filterByString(filterString: String, sortType: Constants.SortType) {
         this.filterString = filterString
+        this.sortType = sortType
         changeHabits()
     }
 
@@ -35,8 +37,16 @@ class HabitsViewModel(private val habitType: Constants.HabitType) : ViewModel(),
         changeHabits()
     }
 
+    fun selectItemSelected(sortType: Constants.SortType) {
+        this.sortType = sortType
+        changeHabits()
+    }
+
     private fun changeHabits() {
-        mutableHabits.postValue(ArrayList<Habit>(
-            HabitModel.getFilteredSortedHabits(filterString, isAscending, habitType, sortType)))
+        mediatorHabits.removeSource(lastHabits)
+        lastHabits = habitModel.getFilteredSortedHabits(filterString, isAscending, habitType, sortType)
+        mediatorHabits.addSource(lastHabits, Observer {
+            mediatorHabits.setValue(it)
+        })
     }
 }

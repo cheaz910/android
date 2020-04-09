@@ -19,7 +19,11 @@ import kotlinx.android.synthetic.main.fragment_habits.*
 import kotlinx.android.synthetic.main.fragment_about.*
 import java.util.*
 
-
+// TO DO
+// поправить при переходе из нав дравера в 'о приложении' и потом на домашнюю страницу (ВЫЛЕТАЕТ)
+// фильтр работает не очень правильно, поправить
+// плавающая кнопка должна плавать
+// ресайклер вью должен быть до боттом шита
 class About : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,

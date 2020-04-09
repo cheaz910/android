@@ -2,15 +2,18 @@ package com.example.task2
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
-@Parcelize
+@Entity
 data class Habit(
-    val id: Int,
     var title: String?,
     var description: String?,
     var priority: String?,
-    var type: Constants.HabitType,
+    var isGoodHabit: Boolean,
     var count: String?,
     var frequency: String?
-) : Parcelable {}
+) {
+    @PrimaryKey(autoGenerate = true) var id = 0
+}
