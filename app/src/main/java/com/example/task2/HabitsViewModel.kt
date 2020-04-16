@@ -4,10 +4,11 @@ import android.util.Log
 import androidx.lifecycle.*
 
 class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel() {
-    private var mediatorHabits: MediatorLiveData<List<Habit>> = MediatorLiveData()
-    private var lastHabits: LiveData<List<Habit>> = MutableLiveData()
+    private var mutableHabits: MutableLiveData<List<Habit>> = MutableLiveData()
+    private var habitsList: List<Habit> = listOf()
+    private var dbLiveData: LiveData<List<Habit>>? = null
 
-    // val habits: LiveData<List<Habit>> = mutableHabits
+    val habits: LiveData<List<Habit>> = mutableHabits
     private var filterString = ""
     private var isAscending = true
     private var sortType = Constants.SortType.TITLE
@@ -18,11 +19,11 @@ class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel() 
     }
 
     private fun load() {
-        changeHabits()
-    }
-
-    fun getHabits() : LiveData<List<Habit>> {
-        return mediatorHabits
+        dbLiveData = habitModel.getHabitsByType(habitType == Constants.HabitType.GOOD)
+        dbLiveData!!.observeForever {
+            habitsList = it
+            changeHabits()
+        }
     }
 
     fun filterByString(filterString: String, sortType: Constants.SortType) {
@@ -42,11 +43,36 @@ class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel() 
         changeHabits()
     }
 
+    fun getFilteredSortedHabits() : List<Habit> {
+        val comparator: Comparator<Habit> = when (this.sortType) {
+            Constants.SortType.TITLE -> if (this.isAscending)
+                compareBy { it.title }
+            else
+                compareByDescending { it.title }
+            Constants.SortType.DESCRIPTION -> if (this.isAscending)
+                compareBy { it.description }
+            else
+                compareByDescending { it.description }
+        }
+        return getFilteredHabits().sortedWith(comparator)
+    }
+
+    private fun getFilteredHabits() : List<Habit> {
+        return if (this.sortType == Constants.SortType.TITLE)
+            getHabits().filter { s -> s.title!!.contains(this.filterString)}
+        else
+            getHabits().filter { s -> s.description!!.contains(this.filterString)}
+
+    }
+
+    private fun getHabits(): List<Habit> {
+        return if (this.habitType == Constants.HabitType.GOOD)
+            habitsList.filter { it.isGoodHabit }
+        else
+            habitsList.filter { !it.isGoodHabit }
+    }
+
     private fun changeHabits() {
-        mediatorHabits.removeSource(lastHabits)
-        lastHabits = habitModel.getFilteredSortedHabits(filterString, isAscending, habitType, sortType)
-        mediatorHabits.addSource(lastHabits, Observer {
-            mediatorHabits.setValue(it)
-        })
+        mutableHabits.postValue(ArrayList<Habit>(getFilteredSortedHabits()))
     }
 }

@@ -52,6 +52,11 @@ class HabitsFragment: Fragment() {
         editHabitCallback = activity as EditHabitCallback
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("LIFECYCLE", "DESTROY")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         habitsViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
@@ -75,7 +80,7 @@ class HabitsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        habitsViewModel.getHabits().observe(this, Observer {
+        habitsViewModel.habits.observe(this, Observer {
             myAdapter = MainAdapter(it as ArrayList<Habit>,
                 editHabitCallback, arguments?.getInt(pageIdKey))
             myRecycler.adapter = myAdapter

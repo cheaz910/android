@@ -39,7 +39,9 @@ class BottomSheetFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("LIFECYCLE", "bottomsheet1")
         habitsViewModel = ViewModelProvider(parentFragment!!).get(HabitsViewModel::class.java)
+        Log.i("LIFECYCLE", "bottomsheet2")
     }
 
     override fun onCreateView(

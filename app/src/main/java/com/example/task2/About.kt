@@ -24,6 +24,9 @@ import java.util.*
 // фильтр работает не очень правильно, поправить
 // плавающая кнопка должна плавать
 // ресайклер вью должен быть до боттом шита
+// вылезает клавиатура
+// HabitModel переписать иф на when
+// TODO
 class About : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,

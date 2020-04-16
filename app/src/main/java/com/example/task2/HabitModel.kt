@@ -5,6 +5,9 @@ import android.os.Parcelable
 import android.util.Log
 import androidx.lifecycle.LiveData
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class HabitModel() {
     private var db = AppDatabase.getInstance()
@@ -12,18 +15,22 @@ class HabitModel() {
     fun createHabit(title: String?, description: String?, priority: String?, type: Constants.HabitType,
                     count: String?, frequency: String?) {
         val habit = Habit(title, description, priority, type == Constants.HabitType.GOOD, count, frequency)
-        db.habitDao().insert(habit)
-    }
-
-    fun getHabitById(id: Int): LiveData<Habit> {
-        return db.habitDao().getHabitById(id)
+        GlobalScope.launch(Dispatchers.IO) {
+            db.habitDao().insert(habit)
+        }
     }
 
     fun editHabit(id: Int, title: String?, description: String?, priority: String?, type: Constants.HabitType,
                   count: String?, frequency: String?) {
         val habit = Habit(title, description, priority, type == Constants.HabitType.GOOD, count, frequency)
         habit.id = id
-        db.habitDao().update(habit)
+        GlobalScope.launch(Dispatchers.IO) {
+            db.habitDao().update(habit)
+        }
+    }
+
+    fun getHabitById(id: Int): LiveData<Habit> {
+        return db.habitDao().getHabitById(id)
     }
 
     fun getFilteredSortedHabits(filterString: String, isAscending: Boolean,
@@ -48,7 +55,7 @@ class HabitModel() {
         return db.habitDao().getAll()
     }
 
-    fun getHabits(isGoodHabit: Boolean): LiveData<List<Habit>> {
+    fun getHabitsByType(isGoodHabit: Boolean): LiveData<List<Habit>> {
         return db.habitDao().getAllByType(isGoodHabit)
     }
 }

@@ -1,15 +1,18 @@
 package com.example.task2
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.internal.ContextUtils
 import kotlinx.android.synthetic.main.fragment_add_habit.*
 
 interface AddHabitCallback {
@@ -107,6 +110,9 @@ class AddHabit : Fragment() {
                 )
             }
             addHabitCallback?.onHabitAdded(arguments?.getInt(pageIdKey))
+
+            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 }
