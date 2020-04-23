@@ -17,6 +17,7 @@
     <string name="aboutFragmentText">Приложение о привычках</string>
     <string name="countPostfix"> дней</string>
     <string name="frequencyPostfix"> раз в день</string>
+    <string name="requiredField">обязательное поле</string>
 
     <string name="priority_prompt">Выберите приоритет</string>
     <string-array name="priorities">
@@ -31,4 +32,22 @@
         <item>Screen 1</item>
         <item>Screen 2</item>
     </string-array>
+
+    <plurals name="countPlurals">
+        <item quantity="zero">%1$d дней</item>
+        <item quantity="one">%1$d день</item>
+        <item quantity="two">%1$d дня</item>
+        <item quantity="few">%1$d дня</item>
+        <item quantity="many">%1$d дней</item>
+        <item quantity="other">%1$d дней</item>
+    </plurals>
+
+    <plurals name="frequencyPlurals">
+        <item quantity="zero">%1$d раз в день</item>
+        <item quantity="one">%1$d раз в день</item>
+        <item quantity="two">%1$d раза в день</item>
+        <item quantity="few">%1$d раза в день</item>
+        <item quantity="many">%1$d раз в день</item>
+        <item quantity="other">%1$d раз в день</item>
+    </plurals>
 </resources>

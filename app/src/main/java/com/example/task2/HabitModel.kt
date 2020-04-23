@@ -12,24 +12,15 @@ import kotlinx.coroutines.launch
 class HabitModel() {
     private var db = AppDatabase.getInstance()
 
-    fun createHabit(title: String?, description: String?, priority: String?, type: Constants.HabitType,
-                    count: String?, frequency: String?) {
-        val habit = Habit(title, description, priority, type == Constants.HabitType.GOOD, count, frequency)
-        GlobalScope.launch(Dispatchers.IO) {
-            db.habitDao().insert(habit)
-        }
+    fun createHabit(habit: Habit) {
+        db.habitDao().insert(habit)
     }
 
-    fun editHabit(id: Int, title: String?, description: String?, priority: String?, type: Constants.HabitType,
-                  count: String?, frequency: String?) {
-        val habit = Habit(title, description, priority, type == Constants.HabitType.GOOD, count, frequency)
-        habit.id = id
-        GlobalScope.launch(Dispatchers.IO) {
-            db.habitDao().update(habit)
-        }
+    fun editHabit(habit: Habit) {
+        db.habitDao().update(habit)
     }
 
-    fun getHabitById(id: Int): LiveData<Habit> {
+    fun getHabitById(id: String): LiveData<Habit> {
         return db.habitDao().getHabitById(id)
     }
 
@@ -37,18 +28,18 @@ class HabitModel() {
                                 type: Constants.HabitType, sortType: Constants.SortType) : LiveData<List<Habit>> {
         if (isAscending) {
             if (sortType == Constants.SortType.TITLE)
-                return db.habitDao().getFilteredTitleAscByField(filterString, type == Constants.HabitType.GOOD)
-            return db.habitDao().getFilteredDescrAscByField(filterString, type == Constants.HabitType.GOOD)
+                return db.habitDao().getFilteredTitleAscByField(filterString, if (type == Constants.HabitType.GOOD) 1 else 0)
+            return db.habitDao().getFilteredDescrAscByField(filterString, if (type == Constants.HabitType.GOOD) 1 else 0)
         }
         if (sortType == Constants.SortType.TITLE)
-            return db.habitDao().getFilteredTitleDescByField(filterString, type == Constants.HabitType.GOOD)
-        return db.habitDao().getFilteredDescrDescByField(filterString, type == Constants.HabitType.GOOD)
+            return db.habitDao().getFilteredTitleDescByField(filterString, if (type == Constants.HabitType.GOOD) 1 else 0)
+        return db.habitDao().getFilteredDescrDescByField(filterString, if (type == Constants.HabitType.GOOD) 1 else 0)
     }
 
     private fun getFilteredHabits(filterString: String, type: Constants.HabitType,
                                   sortType: Constants.SortType) : LiveData<List<Habit>> {
         val filterField = if (sortType == Constants.SortType.TITLE) "title" else "description"
-        return db.habitDao().getFilteredByField(filterField, filterString, type == Constants.HabitType.GOOD)
+        return db.habitDao().getFilteredByField(filterField, filterString, if (type == Constants.HabitType.GOOD) 1 else 0)
     }
 
     fun getAll() : LiveData<List<Habit>> {
@@ -56,6 +47,6 @@ class HabitModel() {
     }
 
     fun getHabitsByType(isGoodHabit: Boolean): LiveData<List<Habit>> {
-        return db.habitDao().getAllByType(isGoodHabit)
+        return db.habitDao().getAllByType(if (isGoodHabit) 1 else 0)
     }
 }

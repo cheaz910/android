@@ -1,28 +1,13 @@
 package com.example.task2
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
-import android.os.Parcelable
-import android.os.PersistableBundle
-import android.util.Log
 import android.view.MenuItem
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.room.Room
-import com.google.android.material.internal.ContextUtils.getActivity
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import java.security.AccessController.getContext
-import java.util.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity(),
@@ -42,6 +27,15 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         AppDatabase.init(applicationContext)
+
+        db = AppDatabase.getInstance()
+        val t = NetworkService.instance.jSONApi
+        GlobalScope.launch {
+            val z = t.getAll()
+            db.habitDao().deleteAll()
+            db.habitDao().insertAll(z)
+            val t = z.get(0)
+        }
 
         setContentView(R.layout.activity_main)
         navigationDrawer.setNavigationItemSelectedListener(this)
@@ -94,7 +88,7 @@ class MainActivity : AppCompatActivity(),
             .commit()
     }
 
-    override fun onEditHabitCallback(id: Int, pageId: Int?) {
+    override fun onEditHabitCallback(id: String, pageId: Int?) {
         supportFragmentManager.beginTransaction()
             .addToBackStack(null)
             .hide(supportFragmentManager.findFragmentByTag("mainFragment")!!)

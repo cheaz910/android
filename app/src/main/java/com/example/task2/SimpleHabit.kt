@@ -10,16 +10,16 @@ import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Entity
-data class Habit(
+data class SimpleHabit(
     var title: String?,
     var description: String?,
     var priority: Int?,
     var type: Int,
     var count: Int?,
-    var frequency: Int?,
-    @SerializedName("uid")
-    @PrimaryKey
-    var id: String
+    var frequency: Int?
 ) {
     var date = Date().time.toInt()
+    fun getHabitWithUID(uid: String) : Habit {
+        return Habit(title, description, priority, type, count, frequency, uid)
+    }
 }

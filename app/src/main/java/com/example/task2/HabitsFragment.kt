@@ -23,7 +23,7 @@ interface AddHabitButtonPressedCallback {
 }
 
 interface EditHabitCallback {
-    fun onEditHabitCallback(id: Int, pageId: Int?)
+    fun onEditHabitCallback(id: String, pageId: Int?)
 }
 
 class HabitsFragment: Fragment() {
@@ -82,48 +82,11 @@ class HabitsFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         habitsViewModel.habits.observe(this, Observer {
             myAdapter = MainAdapter(it as ArrayList<Habit>,
-                editHabitCallback, arguments?.getInt(pageIdKey))
+                editHabitCallback, arguments?.getInt(pageIdKey), context!!)
             myRecycler.adapter = myAdapter
         })
         floatingActionButton2.setOnClickListener {
             addHabitButtonPressedCallback?.onAddHabitButtonPressed(arguments?.getInt(pageIdKey))
-        }
-    }
-
-    class MainAdapter(var items: List<Habit>, var editHabitCallback: EditHabitCallback?,
-                      private val pageId: Int?) :
-        RecyclerView.Adapter<MainAdapter.MainHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            MainHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.main_item,
-                    parent,
-                    false
-                )
-            )
-
-        override fun getItemCount() = items.size
-        override fun onBindViewHolder(holder: MainHolder, position: Int) {
-            holder.bind(items[position])
-            holder.itemView.setOnClickListener {
-                editHabitCallback?.onEditHabitCallback(it.tag as Int, pageId)
-            }
-        }
-
-        inner class MainHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val title = itemView.findViewById<TextView>(R.id.title)
-            private val description = itemView.findViewById<TextView>(R.id.description)
-            private val priority = itemView.findViewById<TextView>(R.id.priority)
-            private val frequency = itemView.findViewById<TextView>(R.id.frequency)
-            private val count = itemView.findViewById<TextView>(R.id.count)
-            fun bind(item: Habit) {
-                itemView.tag = item.id
-                title.text = item.title
-                description.text = item.description
-                priority.text = item.priority
-                frequency.text = if (item.frequency != "") item.frequency + " раз(а) в день" else ""
-                count.text = if (item.count != "") item.count + " дней" else ""
-            }
         }
     }
 }

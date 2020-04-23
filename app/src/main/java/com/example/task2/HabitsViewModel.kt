@@ -2,8 +2,10 @@ package com.example.task2
 
 import android.util.Log
 import androidx.lifecycle.*
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
-class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel() {
+class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel(), CoroutineScope {
     private var mutableHabits: MutableLiveData<List<Habit>> = MutableLiveData()
     private var habitsList: List<Habit> = listOf()
     private var dbLiveData: LiveData<List<Habit>>? = null
@@ -13,6 +15,15 @@ class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel() 
     private var isAscending = true
     private var sortType = Constants.SortType.TITLE
     private val habitModel = HabitModel()
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job + CoroutineExceptionHandler { _, e -> throw e }
+
+    override fun onCleared() {
+        super.onCleared()
+        coroutineContext.cancelChildren()
+    }
 
     init {
         load()
@@ -43,7 +54,7 @@ class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel() 
         changeHabits()
     }
 
-    fun getFilteredSortedHabits() : List<Habit> {
+    private fun getFilteredSortedHabits() : List<Habit> {
         val comparator: Comparator<Habit> = when (this.sortType) {
             Constants.SortType.TITLE -> if (this.isAscending)
                 compareBy { it.title }
@@ -67,12 +78,12 @@ class HabitsViewModel(private var habitType: Constants.HabitType) : ViewModel() 
 
     private fun getHabits(): List<Habit> {
         return if (this.habitType == Constants.HabitType.GOOD)
-            habitsList.filter { it.isGoodHabit }
+            habitsList.filter { it.type == 1 }
         else
-            habitsList.filter { !it.isGoodHabit }
+            habitsList.filter { it.type == 0 }
     }
 
-    private fun changeHabits() {
+    private fun changeHabits() = launch {
         mutableHabits.postValue(ArrayList<Habit>(getFilteredSortedHabits()))
     }
 }
